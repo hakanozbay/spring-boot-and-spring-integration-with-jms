@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jms="http://www.springframework.org/schema/integration/jms"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd 
+       http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms.xsd
+       http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+       http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd">
+
+<!-- JMS TOPICS AND QUUES CONFIG-->
+	<alias name="jmsConnectionFactory" alias="connectionFactory"/>
+
+   <bean id="optionTopic" class="org.apache.activemq.command.ActiveMQTopic">
+        <constructor-arg value="option.jms.topic"/>
+    </bean>
+   
+   <bean id="bondTopic" class="org.apache.activemq.command.ActiveMQTopic">
+        <constructor-arg value="bond.jms.topic"/>
+    </bean>
+ 
+   <bean id="futureTopic" class="org.apache.activemq.command.ActiveMQTopic">
+        <constructor-arg value="future.jms.topic"/>
+    </bean>
+   
+   <bean id="swapTopic" class="org.apache.activemq.command.ActiveMQTopic">
+        <constructor-arg value="swap.jms.topic"/>
+    </bean>
+
+
+<!-- JMS CHANNEL AND ROUTING CONFIGURATION -->
+
+	<!-- JMS MESSAGE SEND CHANNELS -->
+<jms:outbound-channel-adapter id="optionJMSOutboundAdapter" channel="sendOptionChannel" destination-name="option.jms.topic" pub-sub-domain="true" />
+<jms:outbound-channel-adapter id="bondJMSOutboundAdapter" channel="sendBondChannel" destination-name="bond.jms.topic" pub-sub-domain="true" />
+<jms:outbound-channel-adapter id="futureJMSOutboundAdapter" channel="sendFutureChannel" destination-name="future.jms.topic" pub-sub-domain="true" />
+<jms:outbound-channel-adapter id="swapJMSOutboundAdapter" channel="sendSwapChannel" destination-name="swap.jms.topic" pub-sub-domain="true" />
+
+	<!-- JMS MESSAGE RECEIVE CHANNELS-->
+<jms:message-driven-channel-adapter id="optionJMSInboundAdapter" destination-name="option.jms.topic" channel="optionDataChannel" pub-sub-domain="true" />
+<jms:message-driven-channel-adapter id="bondJMSInboundAdapter" destination-name="bond.jms.topic" channel="bondDataChannel" pub-sub-domain="true" />
+<jms:message-driven-channel-adapter id="futureJMSInboundAdapter" destination-name="future.jms.topic" channel="futureDataChannel" pub-sub-domain="true" />
+<jms:message-driven-channel-adapter id="swapJMSInboundAdapter" destination-name="swap.jms.topic" channel="swapDataChannel" pub-sub-domain="true" />
+
+<!-- SPRING INTEGRATION CHANNELS AND EXECUTORS CONFIGURATION-->
+<int:channel id="sendOptionChannel"/>
+<int:channel id="optionDataChannel"> <int:dispatcher task-executor="optionDataExecutor"/></int:channel>
+<task:executor id="optionDataExecutor" pool-size="1" queue-capacity="100" rejection-policy="CALLER_RUNS"/>
+
+<int:channel id="sendBondChannel"/>
+<int:channel id="bondDataChannel"> <int:dispatcher task-executor="bondDataExecutor"/></int:channel>
+<task:executor id="bondDataExecutor" pool-size="1" queue-capacity="100" rejection-policy="CALLER_RUNS"/>
+
+<int:channel id="sendFutureChannel"/>
+<int:channel id="futureDataChannel"> <int:dispatcher task-executor="futureDataExecutor"/></int:channel>
+<task:executor id="futureDataExecutor" pool-size="1" queue-capacity="100" rejection-policy="CALLER_RUNS"/>
+
+<int:channel id="sendSwapChannel"/>
+<int:channel id="swapDataChannel"> <int:dispatcher task-executor="swapDataExecutor"/></int:channel>
+<task:executor id="swapDataExecutor" pool-size="1" queue-capacity="100" rejection-policy="CALLER_RUNS"/>
+
+<!-- WORKFLOW -->
+
+	<!-- MESSAGE PROCESSING WORKFLOW -->
+<int:service-activator input-channel="optionDataChannel" ref="optionDataProcessor" method="processData" />
+<int:service-activator input-channel="bondDataChannel" ref="bondDataProcessor" method="processData" />
+<int:service-activator input-channel="futureDataChannel" ref="futureDataProcessor" method="processData" />
+<int:service-activator input-channel="swapDataChannel" ref="swapDataProcessor" method="processData" />
+
+	<!-- RETRY GATEWAYS ON ERROR WHILE PROCSSING DATA -->
+<int:gateway service-interface="com.example.jms.message.gateway.Gateway">
+	<int:method name="retryProcessingOptionData" request-channel="optionDataChannel"/>
+	<int:method name="retryProcessingBondData" request-channel="bondDataChannel"/>
+	<int:method name="retryProcessingfutureData" request-channel="futureDataChannel"/>
+	<int:method name="retryProcessingSwapData" request-channel="swapDataChannel"/>
+</int:gateway>
+
+</beans>
