@@ -35,17 +35,17 @@ There are several files and packages in the source tree under the src/main/ root
 * **messaging-configuration.xml** : The Spring Integration context file that defines all messaging aspects: JMS topics; messaging workflow and lifecycle of the application (sending, receiving and routing JMS messages to internal queues); executors and queue sizes for processing data; the definition of the components and relationship with each other; component activation and tying it all into place.
 * **MessageDataProcessor.java** : The interface for processing the payload of the incoming JMS message
 * **BlackDataProcessor.java**, **BlueDataProcessor.java**, **GreenDataProcessor.java**, **RedDataProcessor.java** : implementations of the **MessageDataProcessor** interface that line up with the respective topic names.
-* **Gateway.java** : The interface representing the gateway that have methods to retry processing data for each respective instrument type (black, blue, green, red). This is configured in the **messaging-configuration.xml** to add the data back the the processing queue of the processing channel.
+* **Gateway.java** : The interface representing the gateway that have methods to retry processing data for each respective colour (black, blue, green, red). This is configured in the **messaging-configuration.xml** to add the data back the the processing queue of the processing channel.
 
-### Instrument type configuration
+### Colour configuration
 
-Each instrument type has the following setup (in **messaging-configuration.xml**) :
+Each colour has the following setup (in **messaging-configuration.xml**) :
 1. A JMS topic in the format `<colour>.jms.topic`
 2. A JMS outbound adapter to send messages (`<jms:outbound-channel-adapter>`) and a JMS inbound adapter (`<jms:message-driven-channel-adapter>`) to listen for messages for the topic, extract its payload and send it to the relevant Spring Integration channel's queue.
-3. A Spring Integration channel named in the format `send<colour>Channel`, which binds to the respective `<jms:outbound-channel-adapter>` that acts as a an abstraction and facade, which will send a JMS message on the message bus with the respective instrument's topic name (as explained in point numbers 1,2)
+3. A Spring Integration channel named in the format `send<colour>Channel`, which binds to the respective `<jms:outbound-channel-adapter>` that acts as a an abstraction and facade, which will send a JMS message on the message bus with the respective colour's topic name (as explained in point numbers 1,2)
 3. A Spring Integration channel named in the format `<colour>DataChannel` that the payload is passed to. The channel has a complementing executor named in the format `<colour>DataExecutor` configured to have a `queue-size` of 100 and a `pool-size` of 1 (which is the number of threads for the executor)
-4. A `<int:service-activator>` for each channel that will invoke the `processData` method of the instrument type's processor class (named in the format `<colour>DataProcessor`) when an item appears in the channel's queue.
-5. A Gateway method named in the format `retryProcessing<colour>Data` that will pass the data to the back of the queue of that instrument type's Spring Integration channel (as explained in point number 3)
+4. A `<int:service-activator>` for each channel that will invoke the `processData` method of the colour's processor class (named in the format `<colour>DataProcessor`) when an item appears in the channel's queue.
+5. A Gateway method named in the format `retryProcessing<colour>Data` that will pass the data to the back of the queue of that colour's Spring Integration channel (as explained in point number 3)
 
 ## Running the application
 Run the `JmsAndSpringIntegrationApplication` class as a Java application. It will print out Spring Boot startup log messages and then print out the message that has been sent to the message bus, received by the listener, routed to the Spring Integration channel's queue and being processed by the executor. The printed output of the entire application run should turn out like the following:
