@@ -20,17 +20,17 @@ public class JmsAndSpringIntegrationApplication {
 		ConfigurableApplicationContext context = SpringApplication.run(JmsAndSpringIntegrationApplication.class, args);
 		
 		//MESSAGE BUS ACTIVITY BY SENDING MESSAGES TO ALL TOPICS
-		MessageChannel optionChannel = context.getBean("sendOptionChannel", MessageChannel.class);
-		MessageChannel bondChannel = context.getBean("sendBondChannel", MessageChannel.class);
-		MessageChannel futureChannel = context.getBean("sendFutureChannel", MessageChannel.class);
-		MessageChannel swapChannel = context.getBean("sendSwapChannel", MessageChannel.class);
+		MessageChannel greenChannel = context.getBean("sendGreenChannel", MessageChannel.class);
+		MessageChannel redChannel = context.getBean("sendRedChannel", MessageChannel.class);
+		MessageChannel blueChannel = context.getBean("sendBlueChannel", MessageChannel.class);
+		MessageChannel blackChannel = context.getBean("sendBlackChannel", MessageChannel.class);
 		
 		for (int i= 1; i < 100; i ++)
 		{
-			optionChannel.send(MessageBuilder.withPayload("OPTION DATA " + i).build());
-			bondChannel.send(MessageBuilder.withPayload("BOND DATA " + i).build());
-			futureChannel.send(MessageBuilder.withPayload("FUTURE DATA " + i).build());
-			swapChannel.send(MessageBuilder.withPayload("SWAP DATA " + i).build());
+			greenChannel.send(MessageBuilder.withPayload("GREEN DATA " + i).build());
+			redChannel.send(MessageBuilder.withPayload("RED DATA " + i).build());
+			blueChannel.send(MessageBuilder.withPayload("BLUE DATA " + i).build());
+			blackChannel.send(MessageBuilder.withPayload("BLACK DATA " + i).build());
 		}
 		
 	}

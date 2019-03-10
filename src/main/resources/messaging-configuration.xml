@@ -12,68 +12,68 @@
 <!-- JMS TOPICS AND QUUES CONFIG-->
 	<alias name="jmsConnectionFactory" alias="connectionFactory"/>
 
-   <bean id="optionTopic" class="org.apache.activemq.command.ActiveMQTopic">
-        <constructor-arg value="option.jms.topic"/>
+   <bean id="greenTopic" class="org.apache.activemq.command.ActiveMQTopic">
+        <constructor-arg value="green.jms.topic"/>
     </bean>
    
-   <bean id="bondTopic" class="org.apache.activemq.command.ActiveMQTopic">
-        <constructor-arg value="bond.jms.topic"/>
+   <bean id="redTopic" class="org.apache.activemq.command.ActiveMQTopic">
+        <constructor-arg value="red.jms.topic"/>
     </bean>
  
-   <bean id="futureTopic" class="org.apache.activemq.command.ActiveMQTopic">
-        <constructor-arg value="future.jms.topic"/>
+   <bean id="blueTopic" class="org.apache.activemq.command.ActiveMQTopic">
+        <constructor-arg value="blue.jms.topic"/>
     </bean>
    
-   <bean id="swapTopic" class="org.apache.activemq.command.ActiveMQTopic">
-        <constructor-arg value="swap.jms.topic"/>
+   <bean id="blackTopic" class="org.apache.activemq.command.ActiveMQTopic">
+        <constructor-arg value="black.jms.topic"/>
     </bean>
 
 
 <!-- JMS CHANNEL AND ROUTING CONFIGURATION -->
 
 	<!-- JMS MESSAGE SEND CHANNELS -->
-<jms:outbound-channel-adapter id="optionJMSOutboundAdapter" channel="sendOptionChannel" destination-name="option.jms.topic" pub-sub-domain="true" />
-<jms:outbound-channel-adapter id="bondJMSOutboundAdapter" channel="sendBondChannel" destination-name="bond.jms.topic" pub-sub-domain="true" />
-<jms:outbound-channel-adapter id="futureJMSOutboundAdapter" channel="sendFutureChannel" destination-name="future.jms.topic" pub-sub-domain="true" />
-<jms:outbound-channel-adapter id="swapJMSOutboundAdapter" channel="sendSwapChannel" destination-name="swap.jms.topic" pub-sub-domain="true" />
+<jms:outbound-channel-adapter id="greenJMSOutboundAdapter" channel="sendGreenChannel" destination-name="green.jms.topic" pub-sub-domain="true" />
+<jms:outbound-channel-adapter id="redJMSOutboundAdapter" channel="sendRedChannel" destination-name="red.jms.topic" pub-sub-domain="true" />
+<jms:outbound-channel-adapter id="blueJMSOutboundAdapter" channel="sendBlueChannel" destination-name="blue.jms.topic" pub-sub-domain="true" />
+<jms:outbound-channel-adapter id="blackJMSOutboundAdapter" channel="sendBlackChannel" destination-name="black.jms.topic" pub-sub-domain="true" />
 
 	<!-- JMS MESSAGE RECEIVE CHANNELS-->
-<jms:message-driven-channel-adapter id="optionJMSInboundAdapter" destination-name="option.jms.topic" channel="optionDataChannel" pub-sub-domain="true" />
-<jms:message-driven-channel-adapter id="bondJMSInboundAdapter" destination-name="bond.jms.topic" channel="bondDataChannel" pub-sub-domain="true" />
-<jms:message-driven-channel-adapter id="futureJMSInboundAdapter" destination-name="future.jms.topic" channel="futureDataChannel" pub-sub-domain="true" />
-<jms:message-driven-channel-adapter id="swapJMSInboundAdapter" destination-name="swap.jms.topic" channel="swapDataChannel" pub-sub-domain="true" />
+<jms:message-driven-channel-adapter id="greenJMSInboundAdapter" destination-name="green.jms.topic" channel="greenDataChannel" pub-sub-domain="true" />
+<jms:message-driven-channel-adapter id="redJMSInboundAdapter" destination-name="red.jms.topic" channel="redDataChannel" pub-sub-domain="true" />
+<jms:message-driven-channel-adapter id="blueJMSInboundAdapter" destination-name="blue.jms.topic" channel="blueDataChannel" pub-sub-domain="true" />
+<jms:message-driven-channel-adapter id="blackJMSInboundAdapter" destination-name="black.jms.topic" channel="blackDataChannel" pub-sub-domain="true" />
 
 <!-- SPRING INTEGRATION CHANNELS AND EXECUTORS CONFIGURATION-->
-<int:channel id="sendOptionChannel"/>
-<int:channel id="optionDataChannel"> <int:dispatcher task-executor="optionDataExecutor"/></int:channel>
-<task:executor id="optionDataExecutor" pool-size="1" queue-capacity="100" rejection-policy="CALLER_RUNS"/>
+<int:channel id="sendGreenChannel"/>
+<int:channel id="greenDataChannel"> <int:dispatcher task-executor="greenDataExecutor"/></int:channel>
+<task:executor id="greenDataExecutor" pool-size="1" queue-capacity="100" rejection-policy="CALLER_RUNS"/>
 
-<int:channel id="sendBondChannel"/>
-<int:channel id="bondDataChannel"> <int:dispatcher task-executor="bondDataExecutor"/></int:channel>
-<task:executor id="bondDataExecutor" pool-size="1" queue-capacity="100" rejection-policy="CALLER_RUNS"/>
+<int:channel id="sendRedChannel"/>
+<int:channel id="redDataChannel"> <int:dispatcher task-executor="redDataExecutor"/></int:channel>
+<task:executor id="redDataExecutor" pool-size="1" queue-capacity="100" rejection-policy="CALLER_RUNS"/>
 
-<int:channel id="sendFutureChannel"/>
-<int:channel id="futureDataChannel"> <int:dispatcher task-executor="futureDataExecutor"/></int:channel>
-<task:executor id="futureDataExecutor" pool-size="1" queue-capacity="100" rejection-policy="CALLER_RUNS"/>
+<int:channel id="sendBlueChannel"/>
+<int:channel id="blueDataChannel"> <int:dispatcher task-executor="blueDataExecutor"/></int:channel>
+<task:executor id="blueDataExecutor" pool-size="1" queue-capacity="100" rejection-policy="CALLER_RUNS"/>
 
-<int:channel id="sendSwapChannel"/>
-<int:channel id="swapDataChannel"> <int:dispatcher task-executor="swapDataExecutor"/></int:channel>
-<task:executor id="swapDataExecutor" pool-size="1" queue-capacity="100" rejection-policy="CALLER_RUNS"/>
+<int:channel id="sendBlackChannel"/>
+<int:channel id="blackDataChannel"> <int:dispatcher task-executor="blackDataExecutor"/></int:channel>
+<task:executor id="blackDataExecutor" pool-size="1" queue-capacity="100" rejection-policy="CALLER_RUNS"/>
 
 <!-- WORKFLOW -->
 
 	<!-- MESSAGE PROCESSING WORKFLOW -->
-<int:service-activator input-channel="optionDataChannel" ref="optionDataProcessor" method="processData" />
-<int:service-activator input-channel="bondDataChannel" ref="bondDataProcessor" method="processData" />
-<int:service-activator input-channel="futureDataChannel" ref="futureDataProcessor" method="processData" />
-<int:service-activator input-channel="swapDataChannel" ref="swapDataProcessor" method="processData" />
+<int:service-activator input-channel="greenDataChannel" ref="greenDataProcessor" method="processData" />
+<int:service-activator input-channel="redDataChannel" ref="redDataProcessor" method="processData" />
+<int:service-activator input-channel="blueDataChannel" ref="blueDataProcessor" method="processData" />
+<int:service-activator input-channel="blackDataChannel" ref="blackDataProcessor" method="processData" />
 
 	<!-- RETRY GATEWAYS ON ERROR WHILE PROCSSING DATA -->
 <int:gateway service-interface="com.example.jms.message.gateway.Gateway">
-	<int:method name="retryProcessingOptionData" request-channel="optionDataChannel"/>
-	<int:method name="retryProcessingBondData" request-channel="bondDataChannel"/>
-	<int:method name="retryProcessingfutureData" request-channel="futureDataChannel"/>
-	<int:method name="retryProcessingSwapData" request-channel="swapDataChannel"/>
+	<int:method name="retryProcessingGreenData" request-channel="greenDataChannel"/>
+	<int:method name="retryProcessingRedData" request-channel="redDataChannel"/>
+	<int:method name="retryProcessingBlueData" request-channel="blueDataChannel"/>
+	<int:method name="retryProcessingBlackData" request-channel="blackDataChannel"/>
 </int:gateway>
 
 </beans>

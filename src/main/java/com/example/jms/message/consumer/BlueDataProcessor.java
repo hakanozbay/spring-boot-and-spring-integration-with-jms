@@ -8,23 +8,24 @@ import org.springframework.stereotype.Component;
 import com.example.jms.message.gateway.Gateway;
 
 @Component
-public class BondDataProcessor implements MessageDataProcessor {
+public class BlueDataProcessor implements MessageDataProcessor {
 
 	@Autowired
 	Gateway gateway;
 
-	private static final Logger log = LoggerFactory.getLogger(BondDataProcessor.class);
+	private static final Logger log = LoggerFactory.getLogger(BlueDataProcessor.class);
 
 	public void processData (String data)
 	{
 		try
 		{
-			log.info("Retreived Message: {}",data);
+			log.info("Retrieved Message: {}",data);
 		}
 		catch (Exception e) 
 		{
 			log.error("An error has occured while processing data. Will retry", e);
-			gateway.retryProcessingBondData(data);
+			gateway.retryProcessingBlueData(data);
 		}
 	}
+
 }

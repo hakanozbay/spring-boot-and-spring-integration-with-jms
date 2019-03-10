@@ -2,8 +2,8 @@ package com.example.jms.message.gateway;
 
 public interface Gateway {
 
-	public void retryProcessingOptionData(String data);
-	public void retryProcessingBondData(String data);
-	public void retryProcessingFutureData(String data);
-	public void retryProcessingSwapData(String data);
+	public void retryProcessingGreenData(String data);
+	public void retryProcessingRedData(String data);
+	public void retryProcessingBlueData(String data);
+	public void retryProcessingBlackData(String data);
 }
