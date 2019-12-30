@@ -1,8 +1,5 @@
 package com.example.jms;
 
-import javax.jms.JMSException;
-
-import org.springframework.beans.BeansException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -16,7 +13,7 @@ import org.springframework.messaging.MessageChannel;
 @ComponentScan("com.example.jms")
 public class JmsAndSpringIntegrationApplication {
 
-	public static void main(String[] args) throws BeansException, JMSException {
+	public static void main(String[] args){
 		ConfigurableApplicationContext context = SpringApplication.run(JmsAndSpringIntegrationApplication.class, args);
 		
 		//MESSAGE BUS ACTIVITY BY SENDING MESSAGES TO ALL TOPICS
