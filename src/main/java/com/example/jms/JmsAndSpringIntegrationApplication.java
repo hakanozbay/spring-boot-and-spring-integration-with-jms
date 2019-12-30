@@ -30,5 +30,8 @@ public class JmsAndSpringIntegrationApplication {
 			blackChannel.send(MessageBuilder.withPayload("BLACK DATA " + i).build());
 		}
 		
+		context.stop();
+		context.close();
+		
 	}
 }
